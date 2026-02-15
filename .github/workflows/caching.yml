@@ -1,25 +1,21 @@
-name: Caching Challenge
-on: [push, workflow_dispatch]
+name: Cache Dependencies
+
+on: push
 
 jobs:
-  build:
+  cache-job:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      # 1. The Cache Step
-      - name: Restore Cache
-        id: cache-step
+      
+      - name: prime-cache-cd3ca71
         uses: actions/cache@v4
         with:
-          path: my-dummy-file.txt
+          path: ~/.npm
           key: cache-cd3ca71
-
-      # 2. Create file if cache miss (so we have something to save)
-      - name: Generate Data
-        if: steps.cache-step.outputs.cache-hit != 'true'
-        run: echo "This is data to cache" > my-dummy-file.txt
-
-      # 3. CRITICAL STEP: The name must be EXACTLY this
-      - name: prime-cache-cd3ca71
-        run: echo "Cache hit status is ${{ steps.cache-step.outputs.cache-hit }}"
+          restore-keys: |
+            cache-cd3ca71
+        id: cache
+      
+      - name: Echo cache result
+        run: echo "Cache hit: ${{ steps.cache.outputs.cache-hit }}"
