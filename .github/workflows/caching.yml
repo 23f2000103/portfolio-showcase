@@ -1,21 +1,30 @@
-name: Cache Dependencies
+name: Cache CD3CA71 Demo
 
-on: push
+on:
+  push:           # Runs when you push to any branch
+  workflow_dispatch:   # Also lets you run it manually (handy)
 
 jobs:
-  cache-job:
+  test-cache:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      
+      - name: Checkout your code
+        uses: actions/checkout@v4
+
       - name: prime-cache-cd3ca71
+        id: cache-step
         uses: actions/cache@v4
-        id: cache
         with:
-          path: ~/.npm
-          key: cache-cd3ca71
-          restore-keys: |
-            cache-cd3ca71
-      
-      - name: Echo cache result
-        run: echo "Cache hit - ${{ steps.cache.outputs.cache-hit }}"
+          path: dummy-folder-not-used     # we don't really cache anything — that's okay!
+          key: cache-cd3ca71              # ← the exact key they want
+
+      - name: Show if cache was hit or missed
+        run: |
+          echo "Cache result:"
+          echo "  cache-hit = ${{ steps.cache-step.outputs.cache-hit }}"
+          if [ "${{ steps.cache-step.outputs.cache-hit }}" == "true" ]; then
+            echo "→ CACHE HIT! 🎉 (fast because we used the cache)"
+          else
+            echo "→ CACHE MISS (first time or key changed)"
+          fi
