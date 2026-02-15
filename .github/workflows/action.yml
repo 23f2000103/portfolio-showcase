@@ -1,0 +1,11 @@
+name: Email Verification Action
+on: [push]
+jobs:
+  verify-user:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: 23f2000103@ds.study.iitm.ac.in
+        run: echo "Verifying user email in step name"
