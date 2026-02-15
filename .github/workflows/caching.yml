@@ -1,30 +1,26 @@
-name: Cache CD3CA71 Demo
+name: Caching Primes
 
-on:
-  push:           # Runs when you push to any branch
-  workflow_dispatch:   # Also lets you run it manually (handy)
+on: [push, workflow_dispatch]
 
 jobs:
-  test-cache:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout your code
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: prime-cache-cd3ca71
-        id: cache-step
-        uses: actions/cache@v4
-        with:
-          path: dummy-folder-not-used     # we don't really cache anything — that's okay!
-          key: cache-cd3ca71              # ← the exact key they want
+    - name: Cache Primes
+      id: cache-primes
+      uses: actions/cache@v4
+      with:
+        path: prime-numbers
+        key: cache-d18a326
 
-      - name: Show if cache was hit or missed
-        run: |
-          echo "Cache result:"
-          echo "  cache-hit = ${{ steps.cache-step.outputs.cache-hit }}"
-          if [ "${{ steps.cache-step.outputs.cache-hit }}" == "true" ]; then
-            echo "→ CACHE HIT! 🎉 (fast because we used the cache)"
-          else
-            echo "→ CACHE MISS (first time or key changed)"
-          fi
+    - name: Generate Prime Numbers
+      if: steps.cache-primes.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p prime-numbers
+        echo "2, 3, 5, 7, 11, 13, 17, 19, 23, 29" > prime-numbers/primes.txt
+
+    - name: prime-cache-d18a326
+      run: echo "Cache hit ${{ steps.cache-primes.outputs.cache-hit }}"
